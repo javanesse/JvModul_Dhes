@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        handler.removeCallbacks(runnable); //stop handler when activity not visible super.onPause();
+        handler.removeCallbacks(runnable); //stop timer handler when activity not visible super.onPause();
         super.onDestroy();
         soundPool.release(); // Jangan lupa untuk membebaskan sound pool setelah selesai menggunakan aplikasi
     }
