@@ -1,25 +1,45 @@
 package net.javanesse.jvmoduldhes;
 
 
-import android.app.ActionBar;
+
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 
+
 public class MainActivity extends AppCompatActivity {
     private SoundPool soundPool;
     private int soundID;
+
+
+    // Begin Import Timer
+
+    Handler handler = new Handler();
+    Runnable runnable;
+    int delay = 5000;
+
+    // End Import Timer
+
+    // Begin initialization Wakelock import
+//    private PowerManager.WakeLock wakeLock;
+//    private boolean isWakeLockAcquired = false;
+//    private boolean isWakeLockReleased = false;
+    // End initialization Wakelock import
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // Begin FUlLSCREEN
         View decorView = getWindow().getDecorView();
@@ -52,11 +72,11 @@ public class MainActivity extends AppCompatActivity {
                 .setAudioAttributes(attrBuilder.build());
         soundPool = builder.build();
 
-        // Muat suara ke dalam sound pool
+        // Begin Muat suara ke dalam sound pool
         soundID = soundPool.load(this, R.raw.nyco_dhes, 1);
-        // Njajal Nggawe Modul Dhes 16-bit 48Khz
+        // End Muat suara ke dalam sound pool
 
-//        // Setelah suara dimuat, set listener pada tombol Play Sound
+//        // Begin Setelah suara dimuat, set listener pada tombol Play Sound
 //        buttonPlay.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -66,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //        // Klik menggunakan Mouse
 //        buttonPlay.performClick();
+        // End Setelah suara dimuat, set listener pada tombol Play Sound
 
 
         // Begin Touch Down Trigger Button
@@ -76,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_DOWN:
                         // Kode yang ingin dijalankan saat tombol ditekan
                         soundPool.play(soundID, 1, 1, 1, 0, 1);
+                        Toast.makeText(MainActivity.this, "Down", Toast.LENGTH_SHORT).show();
                         break;
                     case MotionEvent.ACTION_UP:
                         // Kode yang ingin dijalankan saat tombol dilepas
@@ -84,13 +106,34 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
         // END Touch Down Trigger Button
     }
 
+    // Begin Timer
+    @Override
+    protected void onResume() {
+        handler.postDelayed(runnable = new Runnable() {
+            public void run() {
+                handler.postDelayed(runnable, delay);
+
+                // soundPool.play(soundID, 1, 1, 1, 0, 1);
+                Toast.makeText(MainActivity.this, "CheckPoint Releasing Memory",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }, delay);
+        super.onResume();
+    }
+
+    // End Timer
+
+    // Begin onDestroy
+
     @Override
     protected void onDestroy() {
+        handler.removeCallbacks(runnable); //stop handler when activity not visible super.onPause();
         super.onDestroy();
         soundPool.release(); // Jangan lupa untuk membebaskan sound pool setelah selesai menggunakan aplikasi
     }
+
+    // End onDestroy
 }
